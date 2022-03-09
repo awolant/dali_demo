@@ -8,11 +8,21 @@ This repository contains demo of NVIDIA DALI usage with PyTorch.
 Usage
 =====
 
-1. Build Docker container with the demo:
+1. Install GIT LFS:
+
+https://git-lfs.github.com/
+
+2. Clone this repository:
+
+``git clone https://gitlab-master.nvidia.com/awolant/dali-apple-demo``
+
+3. Build Docker container with the demo:
+
 ``docker build -t nvidia/dali_demo .``
 
-2. Run the demo
-``docker run --rm --gpus all awolant/apple python dali_demo.py``
+4. Run the demo:
+
+``docker run --rm --gpus all nvidia/dali_demo python dali_demo.py``
 
 Resources
 =========
