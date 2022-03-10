@@ -31,6 +31,7 @@ def get_dali_mnist_pipeline(use_cuda, data_path, training):
     if use_cuda:
         labels = labels.gpu()
     labels = fn.cast(labels, dtype=types.INT64)
+    labels = fn.squeeze(labels, axes=[0])
 
     return images, labels
 
@@ -65,7 +66,7 @@ def train(args, model, device_id, train_loader, optimizer, epoch):
     model.train()
     for batch_idx, batch in enumerate(train_loader):
         data = batch[device_id]['data']
-        target = batch[device_id]['label'].squeeze(-1)
+        target = batch[device_id]['label']
         optimizer.zero_grad()
         output = model(data)
         loss = F.nll_loss(output, target)
@@ -87,7 +88,7 @@ def test(model, device_id, test_loader, test_batch_size):
     with torch.no_grad():
         for batch in test_loader:
             data = batch[device_id]['data']
-            target = batch[device_id]['label'].squeeze(-1)
+            target = batch[device_id]['label']
             output = model(data)
             test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
             pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
@@ -123,6 +124,8 @@ def main():
                         help='random seed (default: 1)')
     parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                         help='how many batches to wait before logging training status')
+    parser.add_argument('--num-threads', type=int, default=8, metavar='N',
+                        help='how many threads to run in DALI pipeline')
     args = parser.parse_args()
     use_cuda = not args.no_cuda and torch.cuda.is_available()
 
@@ -136,7 +139,7 @@ def main():
             data_path=train_path,
             training=True,
             device_id=device_id,
-            num_threads=8,
+            num_threads=args.num_threads,
             batch_size=args.batch_size)
     train_loader = DALIClassificationIterator(
         train_pipeline,
