@@ -14,7 +14,7 @@ https://git-lfs.github.com/
 
 2. Clone this repository:
 
-``git clone https://gitlab-master.nvidia.com/awolant/dali-apple-demo``
+``git clone https://github.com/awolant/dali_demo``
 
 3. Build Docker container with the demo:
 
